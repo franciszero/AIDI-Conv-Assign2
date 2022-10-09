@@ -2,6 +2,7 @@
 
 pip list --format=freeze | awk -F '==' '
 {if($1!~/^en-core-web/ &&
+$1!="xlwings" &&
 $1!="tables" &&
 $1!="numba" &&
 $1!~/mkl-/ &&
