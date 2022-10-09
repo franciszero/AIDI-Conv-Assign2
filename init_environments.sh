@@ -2,6 +2,7 @@
 
 pip list --format=freeze | awk -F '==' '
 {if($1!~/^en-core-web/ &&
+$1!="mkl-fft" &&
 $1!="llvmlite" &&
 $1!="idna" &&
 $1!="navigator-updater" &&
