@@ -2,6 +2,7 @@
 
 pip list --format=freeze | awk -F '==' '
 {if($1!~/^en-core-web/ &&
+$1!~/^daal/ &&
 $1!="pycodestyle" &&
 $1!="scikit-image" &&
 $1!="xlwings" &&
