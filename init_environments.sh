@@ -2,6 +2,7 @@
 
 pip list --format=freeze | awk -F '==' '
 {if($1!~/^en-core-web/ &&
+$1!="numba" &&
 $1!~/mkl-/ &&
 $1!="llvmlite" &&
 $1!="idna" &&
