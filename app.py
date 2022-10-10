@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import requests
+import json
 
 app = Flask(__name__)
 app.debug = True
@@ -7,7 +8,12 @@ app.debug = True
 
 @app.route("/")
 def hello():
-    return "<p>Hello 111</p>"
+    dic = {
+        "name": "Fangji Chen",
+        "Student ID": 200520598,
+    }
+    s = json.dumps(dic, indent=2)
+    return s
 
 
 @app.route("/webpage")
