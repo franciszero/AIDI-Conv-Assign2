@@ -27,21 +27,8 @@ def ross():
     return "<p> Hi I'm Ross. </p><img src='https://bigelow.cc/wp-content/uploads/sites/3/cropped-ross-bigelow.png'> "
 
 
-@app.route('/webhook', methods=['POST'])
-def index():
-    # Get the geo-city entity from the dialogflow fullfilment request.
-    body = request.json
-    city = body['queryResult']['parameters']['geo-city']
-
-    # Uncomment the next 2 lines  if you want to use a simple hard coded random reply.
-    # temperature = str(random.randint(-20,35))
-    # reply = '{"fulfillmentMessages": [ {"text": {"text": ["The  temperature in '+ city +", "+ country +' it is ' + temperature + '"] } } ]}'
-
-    # To openweather and return a real f orcast note you will need to
-    # create an account at openweathermap.com and put your APPID below.
+def request_open_weather(city):
     appId = '9ae09c8334e9478b8e50f3b396a222a7'
-
-    # Connect to the API anf get the JSON file.
     api_url = 'https://api.openweathermap.org/data/2.5/weather?q=' + city + '&units=metric&appid=' + appId
     headers = {'Content-Type': 'application/json'}  # Set the HTTP header for the API request
     response = requests.get(api_url, headers=headers)  # Connect to openweather and read the JSON response.
@@ -57,47 +44,71 @@ def index():
     country = str(r["sys"]["country"])
     # build the Dialogflow reply.
     reply = '{"fulfillmentMessages": [ {"text": {"text": ["Currently in ' + city + ', ' + country + ' it is ' + temp + ' degrees and ' + weather + '"] } } ]}'
-#     reply = '''{"fulfillmentMessages":
-# [{
-#   "telegram": {
-#     "text": "Pick a color",
-#     "reply_markup": {
-#       "inline_keyboard": [
-#         [
-#           {
-#             "text": "Red",
-#             "callback_data": "Red"
-#           }
-#         ],
-#         [
-#           {
-#             "text": "Green",
-#             "callback_data": "Green"
-#           }
-#         ],
-#         [
-#           {
-#             "text": "Yellow",
-#             "callback_data": "Yellow"
-#           }
-#         ],
-#         [
-#           {
-#             "text": "Blue",
-#             "callback_data": "Blue"
-#           }
-#         ],
-#         [
-#           {
-#             "text": "Pink",
-#             "callback_data": "Pink"
-#           }
-#         ]
-#       ]
-#     }
-#   }
-# }]
-# }'''
+    #     reply = '''{"fulfillmentMessages":
+    # [{
+    #   "telegram": {
+    #     "text": "Pick a color",
+    #     "reply_markup": {
+    #       "inline_keyboard": [
+    #         [
+    #           {
+    #             "text": "Red",
+    #             "callback_data": "Red"
+    #           }
+    #         ],
+    #         [
+    #           {
+    #             "text": "Green",
+    #             "callback_data": "Green"
+    #           }
+    #         ],
+    #         [
+    #           {
+    #             "text": "Yellow",
+    #             "callback_data": "Yellow"
+    #           }
+    #         ],
+    #         [
+    #           {
+    #             "text": "Blue",
+    #             "callback_data": "Blue"
+    #           }
+    #         ],
+    #         [
+    #           {
+    #             "text": "Pink",
+    #             "callback_data": "Pink"
+    #           }
+    #         ]
+    #       ]
+    #     }
+    #   }
+    # }]
+    # }'''
+    return reply
+
+
+def request_nasa_searching(query):
+    req_url = "https://images-api.nasa.gov/search?q=apollo%2011"
+    response = requests.get(req_url, headers={'Content-Type': 'application/json'})
+    r = response.json()
+    reply = '{"fulfillmentMessages": [ {"text": {"text": ["' + str(r) + '"] } } ]}'
+    return reply
+
+
+@app.route('/webhook', methods=['POST'])
+def index():
+    # Get the geo-city entity from the dialogflow fullfilment request.
+    body = request.json
+    params = body['queryResult']['parameters']
+    if 'geo-city' in params.keys():
+        city = body['queryResult']['parameters']['geo-city']
+        reply = request_open_weather(city)
+    elif 'NASA_Searching_query' in params.keys():
+        searching_query = body['queryResult']['parameters']['NASA_Searching_query']
+        reply = request_nasa_searching(searching_query)
+    else:
+        reply = '{"fulfillmentMessages": [ {"text": {"text": ["route responses nothing"] } } ]}'
     return reply
 
 
