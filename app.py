@@ -57,12 +57,21 @@ def index():
     country = str(r["sys"]["country"])
     # build the Dialogflow reply.
     reply = '{"fulfillmentMessages": [ {"text": {"text": ["Currently in ' + city + ', ' + country + ' it is ' + temp + ' degrees and ' + weather + '"] } } ]}'
-    reply = '''{
-  "telegram": {
-    "text": "You can read about *entities* [here](/docs/concept-entities).",
-    "parse_mode": "Markdown"
-  }
-}'''
+    reply = '''{"fulfillmentMessages": [ 
+    {
+        "text": {
+          "text": [
+            "test xxx"
+          ]
+        }
+    },
+    {
+      "telegram": {
+        "text": "You can read about *entities* [here](/docs/concept-entities).",
+        "parse_mode": "Markdown"
+      }
+    }
+]'''
     return reply
 
 
