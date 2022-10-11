@@ -12,7 +12,7 @@ def hello():
         "name": "Fangji Chen",
         "Student ID": 200520598,
     }
-    s = json.dumps(dic, indent=2)
+    s = json.dumps(dic, indent=4)
     return s
 
 
@@ -57,6 +57,46 @@ def index():
     country = str(r["sys"]["country"])
     # build the Dialogflow reply.
     reply = '{"fulfillmentMessages": [ {"text": {"text": ["Currently in ' + city + ', ' + country + ' it is ' + temp + ' degrees and ' + weather + '"] } } ]}'
+    reply = '''
+    {
+  "telegram": {
+    "text": "Pick a color",
+    "reply_markup": {
+      "inline_keyboard": [
+        [
+          {
+            "text": "Red",
+            "callback_data": "Red"
+          }
+        ],
+        [
+          {
+            "text": "Green",
+            "callback_data": "Green"
+          }
+        ],
+        [
+          {
+            "text": "Yellow",
+            "callback_data": "Yellow"
+          }
+        ],
+        [
+          {
+            "text": "Blue",
+            "callback_data": "Blue"
+          }
+        ],
+        [
+          {
+            "text": "Pink",
+            "callback_data": "Pink"
+          }
+        ]
+      ]
+    }
+  }
+}'''
     return reply
 
 
