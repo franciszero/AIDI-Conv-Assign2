@@ -91,79 +91,17 @@ def request_open_weather(city):
 def request_nasa_searching(query_program, description):
     req_url = "https://images-api.nasa.gov/search?q=%s&description=%s&media_type=image" % (query_program, description)
     r = requests.get(req_url, headers={'Content-Type': 'application/json'}).json()
-    example_response = """
-    {
-        "collection": {
-            "href": "https://images-api.nasa.gov/search?q=apollo%2011...",
-            "items": [{
-                "data": [{
-                    "center": "JSC",
-                    "date_created": "1969-07-21T00:00:00Z",
-                    "description": "AS11-40-5874 (20 July 1969) ",
-                    "keywords": [
-                        "APOLLO 11 FLIGHT",
-                        "MOON",
-                        "LUNAR SURFACE",
-                        "LUNAR BASES",
-                        "LUNAR MODULE",
-                        "ASTRONAUTS",
-                        "EXTRAVEHICULAR ACIVITY"
-                    ],
-                    "media_type": "image",
-                    "nasa_id": "as11-40-5874",
-                    "title": "Apollo 11 Mission image - Astronaut Edwin Aldrin poses beside th "
-                }],
-                "href": "https://images-assets.nasa.gov/image/as11-40-5874/collection.json",
-                "links": [{
-                    "href": "https://images-assets.nasa.gov/image/as11-40-5874/as11-40-5874~thumb.jpg",
-                    "rel": "preview",
-                    "render": "image"
-                }]
-            }],
-            "links": [{
-                "href": "https://images-api.nasa.gov/search?q=apollo+11...&page=2",
-                "prompt": "Next",
-                "rel": "next"
-            }],
-            "metadata": {
-                "total_hits": 336
-            },
-            "version": "1.0"
-        }
-    }
-    """
-    nasa_id = None
-    items = r["collection"]["items"]
-    if len(items) > 0 :
-        data = items[0]['data']
-    else:
+    total_hits = r["collection"]["metadata"]["total_hits"]
+    if total_hits == 0:
         return '{"fulfillmentMessages": [{ \
                     "text": {\
-                        "text": ["request url is : %s. Item array is empty. Please offer some other searching queries and descriptions."] \
+                        "text": ["total_hits: 0. href: %s. Please retry."] \
                     } \
-                }]}' % req_url
-    if len(data) > 0 :
-        nasa_id = str(data[0]['nasa_id'])
-    else:
-        return '{"fulfillmentMessages": [{ \
-                    "text": {\
-                        "text": ["request url is : %s. Data array is empty. Please offer some other searching queries and descriptions."] \
-                    } \
-                }]}' % req_url
+                }]}' % r["collection"]["href"]
 
+    nasa_id = str(r["collection"]["items"][0]['data'][0]['nasa_id'])
     req_url = "https://images-api.nasa.gov/asset/%s" % nasa_id
     r = requests.get(req_url, headers={'Content-Type': 'application/json'}).json()
-    example_response = """
-    {
-        "collection": {
-            "version": "1.0",
-            "href": "http://images-api.nasa.gov/asset/PIA18906",
-            "items": [{
-                "href": "http://images-assets.nasa.gov/image/PIA18906/PIA18906~orig.jpg"
-            }]
-        }
-    }
-    """
     img = str(r["collection"]["items"][0]['href'])
     reply = '{ "fulfillmentMessages": [{ \
         "card": { \
