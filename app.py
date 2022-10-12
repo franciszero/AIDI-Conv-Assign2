@@ -165,17 +165,16 @@ def request_nasa_searching(query):
 def index():
     # Get the geo-city entity from the dialogflow fullfilment request.
     body = request.json
-    print(str(body['queryResult']))
     params = body['queryResult']['parameters']
     if 'geo-city' in params.keys():
-        city = body['queryResult']['parameters']['geo-city']
+        city = params['geo-city']
         reply = request_open_weather(city)
     elif 'nasa_program' in params.keys():
-        searching_query = body['queryResult']['parameters']['NASA_Searching_query']
+        searching_query = params['nasa_program']
         reply = request_nasa_searching(searching_query)
     else:
         reply = '{"fulfillmentMessages": [ {"text": {"text": ["route responses nothing"] } } ]}'
-    return str(request.json)
+    return str(reply)
 
 
 myData = {
