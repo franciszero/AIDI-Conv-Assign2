@@ -88,8 +88,8 @@ def request_open_weather(city):
     return reply
 
 
-def request_nasa_searching(query):
-    req_url = "https://images-api.nasa.gov/search?q=%s&media_type=image" % query
+def request_nasa_searching(query_program, description):
+    req_url = "https://images-api.nasa.gov/search?q=%s&description=%s&media_type=image" % (query_program, description)
     response = requests.get(req_url, headers={'Content-Type': 'application/json'})
     r = response.json()
     example_response = """
@@ -167,8 +167,9 @@ def index():
         city = params['geo-city']
         reply = request_open_weather(city)
     elif 'nasa_program' in params.keys():
-        searching_query = params['nasa_program']
-        reply = request_nasa_searching(searching_query)
+        query_program = params['nasa_program']
+        description = params['description']
+        reply = request_nasa_searching(query_program, description)
     else:
         reply = '{"fulfillmentMessages": [ {"text": {"text": ["route responses nothing"] } } ]}'
     return str(reply)
