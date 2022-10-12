@@ -87,7 +87,7 @@ def request_open_weather(city):
       }
     }
     """
-    return json.dumps(reply)
+    return json.dumps(json.loads(reply))
 
 
 def request_nasa_searching(query_program, description):
