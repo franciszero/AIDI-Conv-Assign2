@@ -67,10 +67,14 @@ def request_open_weather(city):
 	"fulfillmentMessages": [{
 		"payload": {
 			"telegram": {
-			    "text": "https://www.baidu.com/img/pc_79bff59263430e2e42693b50cf376490.png\\nhttps://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png",
+				"photo": [{
+					"file_id": 1,
+					"file_unique_id": 2,
+					"width": 100,
+					"height": 100
+				}],
 				"entities": [{
-					"type": "text_link",
-					"url": "https://www.baidu.com/img/pc_79bff59263430e2e42693b50cf376490.png"
+					"url": "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"
 				}]
 			}
 		}
