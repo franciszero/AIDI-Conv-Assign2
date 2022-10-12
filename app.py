@@ -5,57 +5,23 @@ import json
 app = Flask(__name__)
 app.debug = True
 
-reply = """{
-  "fulfillmentMessages": [
-    {
-      "payload": {
-    
-          "telegram": {
-            "text": "Pick a color",
-            "reply_markup": {
-              "inline_keyboard": [
-                [
-                  {
-                    "text": "Red",
-                    "callback_data": "Red"
-                  }
-                ],
-                [
-                  {
-                    "text": "Green",
-                    "callback_data": "Green"
-                  }
-                ],
-                [
-                  {
-                    "text": "Yellow",
-                    "callback_data": "Yellow"
-                  }
-                ],
-                [
-                  {
-                    "text": "Blue",
-                    "callback_data": "Blue"
-                  }
-                ],
-                [
-                  {
-                    "text": "Pink",
-                    "callback_data": "Pink"
-                  }
-                ]
-              ]
-            }
-          }
-    
-
-      }
-    }
-  ]
+reply = """
+{
+	"fulfillmentMessages": [{
+		"payload": {
+			"telegram": {
+				"entities": [{
+					"type": "text_link",
+					"url": "https://www.baidu.com/img/pc_79bff59263430e2e42693b50cf376490.png"
+				}]
+			}
+		}
+	}]
 }
  """
 jobj = json.loads(reply)
 i = None
+
 
 @app.route("/")
 def hello():
@@ -95,54 +61,19 @@ def request_open_weather(city):
     country = str(r["sys"]["country"])
     # build the Dialogflow reply.
     reply = '{"fulfillmentMessages": [ {"text": {"text": ["Currently in ' + city + ', ' + country + ' it is ' + temp + ' degrees and ' + weather + '"] } } ]}'
-    reply = """{
-      "fulfillmentMessages": [
-        {
-          "payload": {
-
-              "telegram": {
-                "text": "Pick a color",
-                "reply_markup": {
-                  "inline_keyboard": [
-                    [
-                      {
-                        "text": "Red",
-                        "callback_data": "Red"
-                      }
-                    ],
-                    [
-                      {
-                        "text": "Green",
-                        "callback_data": "Green"
-                      }
-                    ],
-                    [
-                      {
-                        "text": "Yellow",
-                        "callback_data": "Yellow"
-                      }
-                    ],
-                    [
-                      {
-                        "text": "Blue",
-                        "callback_data": "Blue"
-                      }
-                    ],
-                    [
-                      {
-                        "text": "Pink",
-                        "callback_data": "Pink"
-                      }
-                    ]
-                  ]
-                }
-              }
-
-
-          }
-        }
-      ]
-    }
+    reply = """
+{
+	"fulfillmentMessages": [{
+		"payload": {
+			"telegram": {
+				"entities": [{
+					"type": "text_link",
+					"url": "https://www.baidu.com/img/pc_79bff59263430e2e42693b50cf376490.png"
+				}]
+			}
+		}
+	}]
+}
      """
     return json.dumps(json.loads(reply))
 
@@ -175,6 +106,9 @@ def request_nasa_searching(query_program, description):
 
 
 @app.route('/webhook', methods=['POST'])
+# for webhook examples, see: https://cloud.google.com/dialogflow/es/docs/fulfillment-webhook
+# for Custom payload responses, see: https://cloud.google.com/dialogflow/es/docs/integrations/telegram
+# for Telegram msg doc, see: https://core.telegram.org/bots/api#message
 def index():
     # Get the geo-city entity from the dialogflow fullfilment request.
     body = request.json
