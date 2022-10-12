@@ -144,20 +144,17 @@ def request_nasa_searching(query):
             "href": "http://images-api.nasa.gov/asset/PIA18906",
             "items": [{
                 "href": "http://images-assets.nasa.gov/image/PIA18906/PIA18906~orig.jpg"
-            }, {
-                "href": "http://images-assets.nasa.gov/image/PIA18906/PIA18906~medium.jpg"
-            }, {
-                "href": "http://images-assets.nasa.gov/image/PIA18906/PIA18906~small.jpg"
-            }, {
-                "href": "http://images-assets.nasa.gov/image/PIA18906/PIA18906~thumb.jpg"
-            }, {
-                "href": "http://images-assets.nasa.gov/image/PIA18906/metadata.json"
             }]
         }
     }
     """
     img = str(r["collection"]["items"][0]['href'])
-    reply = '{"fulfillmentMessages": [ {"text": {"text": ["%s"] } } ]}' % img
+    reply = '{ "fulfillmentMessages": [{ \
+        "card": { \
+            "title": "title1", \
+            "imageUri": "%s" \
+        }] \
+    }' % img
     return reply
 
 
