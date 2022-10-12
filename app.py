@@ -62,15 +62,15 @@ def request_nasa_searching(query_program, description):
     req_url = "https://images-api.nasa.gov/asset/%s" % nasa_id
     r = requests.get(req_url, headers={'Content-Type': 'application/json'}).json()
 
-    images = ""
+    images = []
     items = r["collection"]["items"]
     for _, item in enumerate(items):
-        images += str(item['href']) + "\n"
+        images.append(str(item['href']))
     reply = '{ "fulfillmentMessages": [{ \
             "text": {\
-                "text": ["total_hits: 0. href: %s. Please retry."] \
+                "text": %s \
             } \
-        }]}' % images
+        }]}' % str(images)
     return reply
 
 
