@@ -44,47 +44,6 @@ def request_open_weather(city):
     country = str(r["sys"]["country"])
     # build the Dialogflow reply.
     reply = '{"fulfillmentMessages": [ {"text": {"text": ["Currently in ' + city + ', ' + country + ' it is ' + temp + ' degrees and ' + weather + '"] } } ]}'
-    #     reply = '''{"fulfillmentMessages":
-    # [{
-    #   "telegram": {
-    #     "text": "Pick a color",
-    #     "reply_markup": {
-    #       "inline_keyboard": [
-    #         [
-    #           {
-    #             "text": "Red",
-    #             "callback_data": "Red"
-    #           }
-    #         ],
-    #         [
-    #           {
-    #             "text": "Green",
-    #             "callback_data": "Green"
-    #           }
-    #         ],
-    #         [
-    #           {
-    #             "text": "Yellow",
-    #             "callback_data": "Yellow"
-    #           }
-    #         ],
-    #         [
-    #           {
-    #             "text": "Blue",
-    #             "callback_data": "Blue"
-    #           }
-    #         ],
-    #         [
-    #           {
-    #             "text": "Pink",
-    #             "callback_data": "Pink"
-    #           }
-    #         ]
-    #       ]
-    #     }
-    #   }
-    # }]
-    # }'''
     return reply
 
 
@@ -102,13 +61,16 @@ def request_nasa_searching(query_program, description):
     nasa_id = str(r["collection"]["items"][0]['data'][0]['nasa_id'])
     req_url = "https://images-api.nasa.gov/asset/%s" % nasa_id
     r = requests.get(req_url, headers={'Content-Type': 'application/json'}).json()
-    img = str(r["collection"]["items"][0]['href'])
+
+    images = ""
+    items = r["collection"]["items"]
+    for _, item in enumerate(items):
+        images += str(item['href']) + "\n"
     reply = '{ "fulfillmentMessages": [{ \
-        "card": { \
-            "title": "title1", \
-            "imageUri": "%s" \
-        }] \
-    }' % img
+            "text": {\
+                "text": ["total_hits: 0. href: %s. Please retry."] \
+            } \
+        }]}' % images
     return reply
 
 
