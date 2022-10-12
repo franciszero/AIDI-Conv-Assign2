@@ -5,6 +5,8 @@ import json
 app = Flask(__name__)
 app.debug = True
 
+"1.jpg".endswith("jpg")
+
 reply = """
 {
 	"fulfillmentMessages": [{
@@ -62,25 +64,26 @@ def request_open_weather(city):
     country = str(r["sys"]["country"])
     # build the Dialogflow reply.
     reply = '{"fulfillmentMessages": [ {"text": {"text": ["Currently in ' + city + ', ' + country + ' it is ' + temp + ' degrees and ' + weather + '"] } } ]}'
-    reply = """
-{
-	"fulfillmentMessages": [{
-		"payload": {
-			"telegram": {
-				"photo": [{
-					"file_id": 1,
-					"file_unique_id": 2,
-					"width": 100,
-					"height": 100
-				}],
-				"entities": [{
-					"url": "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"
-				}]
-			}
-		}
-	}]
-}
-     """
+#     reply = """
+# {
+# 	"fulfillmentMessages": [{
+# 		"payload": {
+# 			"telegram": {
+# 			    "text": "",
+# 				"photo": [{
+# 					"file_id": 1,
+# 					"file_unique_id": 2,
+# 					"width": 100,
+# 					"height": 100
+# 				}],
+# 				"caption_entities": [{
+# 					"url": "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"
+# 				}]
+# 			}
+# 		}
+# 	}]
+# }
+#      """
     return json.dumps(json.loads(reply))
 
 
@@ -99,15 +102,18 @@ def request_nasa_searching(query_program, description):
     req_url = "https://images-api.nasa.gov/asset/%s" % nasa_id
     r = requests.get(req_url, headers={'Content-Type': 'application/json'}).json()
 
-    images = []
     items = r["collection"]["items"]
+    img = ""
     for _, item in enumerate(items):
-        images.append(str(item['href']))
+        img = str(item['href'])
+        if img.endswith("jpg"):
+            break
+
     reply = '{ "fulfillmentMessages": [{ \
             "text": {\
-                "text": %s \
+                "text": [%s] \
             } \
-        }]}' % json.dumps(images)
+        }]}' % json.dumps(img)
     return reply
 
 
