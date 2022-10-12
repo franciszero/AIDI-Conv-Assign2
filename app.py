@@ -157,7 +157,7 @@ def request_nasa_searching(query):
     }
     """
     img = str(r["collection"]["items"][0]['href'])
-    reply = '{"fulfillmentMessages": [ {"text": {"text": ["nasa_id: %s"] } } ]}' % img
+    reply = '{"fulfillmentMessages": [ {"text": {"text": ["%s"] } } ]}' % img
     return reply
 
 
@@ -169,7 +169,7 @@ def index():
     if 'geo-city' in params.keys():
         city = body['queryResult']['parameters']['geo-city']
         reply = request_open_weather(city)
-    elif 'NASA_Searching_query' in params.keys():
+    elif 'nasa_program' in params.keys():
         searching_query = body['queryResult']['parameters']['NASA_Searching_query']
         reply = request_nasa_searching(searching_query)
     else:
