@@ -134,8 +134,30 @@ def request_nasa_searching(query):
     }
     """
     nasa_id = str(r["collection"]["items"][0]['data'][0]['nasa_id'])
-
-    reply = '{"fulfillmentMessages": [ {"text": {"text": ["nasa_id: %s"] } } ]}' % nasa_id
+    req_url = "https://images-api.nasa.gov/asset/%s" % nasa_id
+    response = requests.get(req_url, headers={'Content-Type': 'application/json'})
+    r = response.json()
+    example_response = """
+    {
+        "collection": {
+            "version": "1.0",
+            "href": "http://images-api.nasa.gov/asset/PIA18906",
+            "items": [{
+                "href": "http://images-assets.nasa.gov/image/PIA18906/PIA18906~orig.jpg"
+            }, {
+                "href": "http://images-assets.nasa.gov/image/PIA18906/PIA18906~medium.jpg"
+            }, {
+                "href": "http://images-assets.nasa.gov/image/PIA18906/PIA18906~small.jpg"
+            }, {
+                "href": "http://images-assets.nasa.gov/image/PIA18906/PIA18906~thumb.jpg"
+            }, {
+                "href": "http://images-assets.nasa.gov/image/PIA18906/metadata.json"
+            }]
+        }
+    }
+    """
+    img = str(r["collection"]["items"][0]['href'])
+    reply = '{"fulfillmentMessages": [ {"text": {"text": ["nasa_id: %s"] } } ]}' % img
     return reply
 
 
