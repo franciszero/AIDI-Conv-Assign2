@@ -131,7 +131,7 @@ def request_open_weather(city):
     country = str(r["sys"]["country"])
     # build the Dialogflow reply.
     reply = '{"fulfillmentMessages": [ {"text": {"text": ["Currently in ' + city + ', ' + country + ' it is ' + temp + ' degrees and ' + weather + '"] } } ]}'
-    reply = """{"fulfillmentMessages": [ 
+    reply = """ 
     {
       "telegram": {
         "text": "Pick a color",
@@ -171,7 +171,6 @@ def request_open_weather(city):
         }
       }
     }
-    ]}
     """
     return json.dumps(json.loads(reply))
 
