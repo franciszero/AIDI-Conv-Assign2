@@ -89,10 +89,53 @@ def request_open_weather(city):
 
 
 def request_nasa_searching(query):
-    req_url = "https://images-api.nasa.gov/search?q=apollo%2011"
+    req_url = "https://images-api.nasa.gov/search?q=%s&media_type=image" % query
     response = requests.get(req_url, headers={'Content-Type': 'application/json'})
     r = response.json()
-    reply = '{"fulfillmentMessages": [ {"text": {"text": ["' + str(r) + '"] } } ]}'
+    example_response = """
+    {
+        "collection": {
+            "href": "https://images-api.nasa.gov/search?q=apollo%2011...",
+            "items": [{
+                "data": [{
+                    "center": "JSC",
+                    "date_created": "1969-07-21T00:00:00Z",
+                    "description": "AS11-40-5874 (20 July 1969) ",
+                    "keywords": [
+                        "APOLLO 11 FLIGHT",
+                        "MOON",
+                        "LUNAR SURFACE",
+                        "LUNAR BASES",
+                        "LUNAR MODULE",
+                        "ASTRONAUTS",
+                        "EXTRAVEHICULAR ACIVITY"
+                    ],
+                    "media_type": "image",
+                    "nasa_id": "as11-40-5874",
+                    "title": "Apollo 11 Mission image - Astronaut Edwin Aldrin poses beside th "
+                }],
+                "href": "https://images-assets.nasa.gov/image/as11-40-5874/collection.json",
+                "links": [{
+                    "href": "https://images-assets.nasa.gov/image/as11-40-5874/as11-40-5874~thumb.jpg",
+                    "rel": "preview",
+                    "render": "image"
+                }]
+            }],
+            "links": [{
+                "href": "https://images-api.nasa.gov/search?q=apollo+11...&page=2",
+                "prompt": "Next",
+                "rel": "next"
+            }],
+            "metadata": {
+                "total_hits": 336
+            },
+            "version": "1.0"
+        }
+    }
+    """
+    nasa_id = str(r["collection"]["items"][0]['data'][0]['nasa_id'])
+
+    reply = '{"fulfillmentMessages": [ {"text": {"text": ["nasa_id: %s"] } } ]}' % nasa_id
     return reply
 
 
