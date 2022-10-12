@@ -66,6 +66,7 @@ def request_open_weather(city):
 	"fulfillmentMessages": [{
 		"payload": {
 			"telegram": {
+			    "text": "https://www.baidu.com/img/pc_79bff59263430e2e42693b50cf376490.png",
 				"entities": [{
 					"type": "text_link",
 					"url": "https://www.baidu.com/img/pc_79bff59263430e2e42693b50cf376490.png"
