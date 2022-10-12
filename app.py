@@ -90,8 +90,7 @@ def request_open_weather(city):
 
 def request_nasa_searching(query_program, description):
     req_url = "https://images-api.nasa.gov/search?q=%s&description=%s&media_type=image" % (query_program, description)
-    response = requests.get(req_url, headers={'Content-Type': 'application/json'})
-    r = response.json()
+    r = requests.get(req_url, headers={'Content-Type': 'application/json'}).json()
     example_response = """
     {
         "collection": {
@@ -133,29 +132,40 @@ def request_nasa_searching(query_program, description):
         }
     }
     """
-    nasa_id = str(r["collection"]["items"][0]['data'][0]['nasa_id'])
-    req_url = "https://images-api.nasa.gov/asset/%s" % nasa_id
-    response = requests.get(req_url, headers={'Content-Type': 'application/json'})
-    r = response.json()
-    example_response = """
-    {
-        "collection": {
-            "version": "1.0",
-            "href": "http://images-api.nasa.gov/asset/PIA18906",
-            "items": [{
-                "href": "http://images-assets.nasa.gov/image/PIA18906/PIA18906~orig.jpg"
-            }]
+    nasa_id = None
+    items = r["collection"]["items"]
+    if len(items) > 0 :
+        data = items[0]['data']
+        if len(data) > 0 :
+            nasa_id = str(data[0]['nasa_id'])
+    if nasa_id is None:
+        return '{"fulfillmentMessages": [{ \
+                    "text": {\
+                        "text": ["Fail. Please offer some other searching queries and descriptions."] \
+                    } \
+                }]}'
+    else:
+        req_url = "https://images-api.nasa.gov/asset/%s" % nasa_id
+        r = requests.get(req_url, headers={'Content-Type': 'application/json'}).json()
+        example_response = """
+        {
+            "collection": {
+                "version": "1.0",
+                "href": "http://images-api.nasa.gov/asset/PIA18906",
+                "items": [{
+                    "href": "http://images-assets.nasa.gov/image/PIA18906/PIA18906~orig.jpg"
+                }]
+            }
         }
-    }
-    """
-    img = str(r["collection"]["items"][0]['href'])
-    reply = '{ "fulfillmentMessages": [{ \
-        "card": { \
-            "title": "title1", \
-            "imageUri": "%s" \
-        }] \
-    }' % img
-    return reply
+        """
+        img = str(r["collection"]["items"][0]['href'])
+        reply = '{ "fulfillmentMessages": [{ \
+            "card": { \
+                "title": "title1", \
+                "imageUri": "%s" \
+            }] \
+        }' % img
+        return reply
 
 
 @app.route('/webhook', methods=['POST'])
