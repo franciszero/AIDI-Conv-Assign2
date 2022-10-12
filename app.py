@@ -70,7 +70,7 @@ def request_nasa_searching(query_program, description):
             "text": {\
                 "text": %s \
             } \
-        }]}' % str(images)
+        }]}' % json.dumps(images)
     return reply
 
 
