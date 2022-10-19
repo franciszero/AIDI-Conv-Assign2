@@ -1,29 +1,14 @@
+import os
+
 from flask import Flask, render_template, request
 import requests
 import json
+import dialogflow_fulfillment
+from dialogflow_fulfillment import WebhookClient, Context
+import openai
 
 app = Flask(__name__)
 app.debug = True
-
-"1.jpg".endswith("jpg")
-
-reply = """
-{
-	"fulfillmentMessages": [{
-		"payload": {
-			"telegram": {
-			    "text": "https://www.baidu.com/img/pc_79bff59263430e2e42693b50cf376490.png\\nhttps://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png5",
-				"entities": [{
-					"type": "text_link",
-					"url": "https://www.baidu.com/img/pc_79bff59263430e2e42693b50cf376490.png"
-				}]
-			}
-		}
-	}]
-}
- """
-jobj = json.loads(reply)
-i = None
 
 
 @app.route("/")
@@ -36,15 +21,42 @@ def hello():
     return s
 
 
-@app.route("/webpage")
-def webpage():
-    return render_template("1.html")
+# Put your OpenAI key in the config.json file.
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-# see: https://github.com/rbigelow/flask-intro/blob/main/app.py
-@app.route("/ross")
-def ross():
-    return "<p> Hi I'm Ross. </p><img src='https://bigelow.cc/wp-content/uploads/sites/3/cropped-ross-bigelow.png'> "
+@app.route('/webhook', methods=['POST', 'GET'])
+def friend():
+    # Handle the incoming request
+    body = request.json
+    agent = WebhookClient(body)
+    query = agent.query
+    contexts = Context(agent.context, agent.session)
+    context = (contexts.get('converstation'))
+    converstation = "\n\n"
+    if "parameters" in context:  # If not first exchange then capture converstation history from context.
+        converstation = context['parameters']['converstation'] + "\n\n"
+
+    response = openai.Completion.create(  # Build the GPT query.
+        engine="text-davinci-001",
+        prompt=converstation + " You:" + query,
+        temperature=0.5,
+        max_tokens=60,
+        top_p=1.0,
+        frequency_penalty=0.5,
+        presence_penalty=0.0,
+        stop=["You:"]
+    )
+
+    GPTresponse = response["choices"][0]["text"]
+    # Capture the entire converstation history and send it as an outputContext
+    # that can be feed back into GPT as the prompt as converstation evolves.
+    history = {
+        "converstation": converstation + " You:" + query + " " + GPTresponse
+    }
+    contexts.set('converstation', 5, history)
+    agent.add(GPTresponse)
+    return agent.response
 
 
 def request_open_weather(city):
@@ -64,26 +76,26 @@ def request_open_weather(city):
     country = str(r["sys"]["country"])
     # build the Dialogflow reply.
     reply = '{"fulfillmentMessages": [ {"text": {"text": ["Currently in ' + city + ', ' + country + ' it is ' + temp + ' degrees and ' + weather + '"] } } ]}'
-#     reply = """
-# {
-# 	"fulfillmentMessages": [{
-# 		"payload": {
-# 			"telegram": {
-# 			    "text": "",
-# 				"photo": [{
-# 					"file_id": 1,
-# 					"file_unique_id": 2,
-# 					"width": 100,
-# 					"height": 100
-# 				}],
-# 				"caption_entities": [{
-# 					"url": "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"
-# 				}]
-# 			}
-# 		}
-# 	}]
-# }
-#      """
+    #     reply = """
+    # {
+    # 	"fulfillmentMessages": [{
+    # 		"payload": {
+    # 			"telegram": {
+    # 			    "text": "",
+    # 				"photo": [{
+    # 					"file_id": 1,
+    # 					"file_unique_id": 2,
+    # 					"width": 100,
+    # 					"height": 100
+    # 				}],
+    # 				"caption_entities": [{
+    # 					"url": "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"
+    # 				}]
+    # 			}
+    # 		}
+    # 	}]
+    # }
+    #      """
     return json.dumps(json.loads(reply))
 
 
@@ -148,3 +160,14 @@ myData = {
 @app.route("/json")
 def myJson():
     return myData
+
+
+@app.route("/webpage")
+def webpage():
+    return render_template("1.html")
+
+
+# see: https://github.com/rbigelow/flask-intro/blob/main/app.py
+@app.route("/ross")
+def ross():
+    return "<p> Hi I'm Ross. </p><img src='https://bigelow.cc/wp-content/uploads/sites/3/cropped-ross-bigelow.png'> "
